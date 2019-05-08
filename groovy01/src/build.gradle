@@ -1,0 +1,131 @@
+/**
+参照网站为
+http://blog.didispace.com/books/GradleUserGuide/more_about_tasks/locating_tasks.html
+ */
+task hello1 {
+    doLast {
+        println 'Hello world!'
+    }
+}
+task tom {
+    doLast {
+        println 'i am a cat!'
+    }
+}
+task upper {
+    doLast{
+        String someString = 'mY_nAmE'
+        println "Original: " + someString
+        println "Upper case: " + someString.toUpperCase()
+    }
+}
+task mibc{
+    doLast{
+        println "i am mibc"
+    }
+}
+
+
+task hello  {
+    doLast{
+     println 'Hello Earth'
+    }
+}
+hello.doFirst {
+    println 'Hello Venus'
+}
+hello.doLast {
+    println 'Hello Mars'
+}
+hello  {
+    doLast{
+    println 'Hello Jupiter'
+
+    }
+}
+
+
+task myTask {
+    ext.name = "tom"
+    ext.age = "23"
+}
+
+task printTaskProperties  {
+    doLast{
+    println myTask.ext.name
+    println myTask.age
+    }
+}
+
+defaultTasks 'clean', 'run'
+
+task clean  {
+    doLast{
+
+    println 'Default Cleaning!'
+    }
+}
+
+task run {
+    doLast{
+    println 'Default Running!'
+
+    }
+}
+
+task other  {
+    doLast{
+
+    println "I'm not a default task!"
+    }
+}
+
+
+
+task distribution  {
+    doLast{
+        println "We build the zip with version=$version"
+    }
+}
+
+task release(dependsOn: 'distribution')  {
+    doLast{
+        println 'We release now'
+    }
+}
+
+gradle.taskGraph.whenReady {taskGraph ->
+    if (taskGraph.hasTask(release)) {
+        version = '1.0'
+    } else {
+        version = '1.0-SNAPSHOT'
+    }
+    println 'i am ready'
+}
+
+
+task fileRead{
+    doLast{
+
+        File configFile = file('D://Android//github//groovy01//src//config.xml')
+        println configFile.getText()
+        copy()
+
+    }
+}
+
+
+
+
+task copyTask(type: Copy) {
+    from 'D://Android//github//groovy01//src//config.xml'
+    into 'D://Android'
+}
+//复制文件到指定目录
+task copyFile(type:Copy) {
+    from('D://Android//github//groovy01//src//config.xml')
+    into('D://Android//github//groovy01//config')
+    // include('D://Android//github//groovy01//config//config1.xml')
+    rename{ 'config1.xml'}
+   
+}
