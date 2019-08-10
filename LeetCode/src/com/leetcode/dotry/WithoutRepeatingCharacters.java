@@ -1,5 +1,8 @@
 package com.leetcode.dotry;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * 给定一个字符串，请你找出其中不含有重复字符的 最长子串 的长度。
  *
@@ -27,27 +30,59 @@ package com.leetcode.dotry;
 public class WithoutRepeatingCharacters {
 
     public static void main(String[] args) {
-        int length = Solution.lengthOfLongestSubstring("abc");
+        int length = Solution.lengthOfLongestSubstring("abac");
         System.out.println("length is :"+length);
     }
    static class Solution {
         public static int lengthOfLongestSubstring(String s) {
-            int l =0;
-            int r = -1;
-            int res = 0;
-            int [] freq = new int[256];
-            while(l<s.length()){
-                if(r+1<s.length()&&freq[s.charAt(r+1)]==0){
-                    r++;
-                    freq[(int)s.charAt(r)]++;
-                }else{
-                    freq[(int)(s.charAt(l++))]--;
+            int l = 0;
+            int [] dp = new int[s.length()+1];
+            for(int i=0;i<s.length();i++){
+                String s1 = s.substring(l,i);
+                char ch = s.charAt(i);
+               int index = s1.indexOf(ch);
+                if(index!=-1){//找到一个重复的字符,记录下这个坐标。
+                    char  s2 = ch;
+
+                    l = s.indexOf(s2, l)+1;
                 }
-                res = Math.max(res,r-l+1);
+                dp[i+1] = Math.max(dp[i], i-l+1);
             }
-            return res;
+            return dp[s.length()];
         }
+
+       public int lengthOfLongestSubstring1(String s) {
+           // 字符上次出现的位置
+           Map<Character, Integer> charLastPos = new HashMap<Character, Integer>();
+           int start = -1; // 子串起始位置为start+1
+           int maxLen = 0; // 最长子串长度
+           int len = s.length(); // 记录字符串长度，避免for循环多次都调用函数
+           for (int i = 0; i < len; i++) {
+               Character cur = s.charAt(i);
+               if (charLastPos.containsKey(cur)) {
+                   // 当前字符上一次出现的位置
+                   int lastPos = charLastPos.get(cur);
+                   // 出现重复字符时，比较字符上次出现的位置与当前子串start大小
+                   // 若小于start，说明不在当前子串里，start不变
+                   // 若大于start，说明在当前子串里，把start更新到字符上次出现的位置
+                   if (lastPos > start) {
+                       start = lastPos;
+                   }
+               }
+               // 子串其实是从start+1位置开始
+               // 子串长度计算公式为：i-(start+1)+1，简化为i-start
+               int curLen = i - start;
+               if (curLen > maxLen) {
+                   maxLen = curLen;
+               }
+               charLastPos.put(s.charAt(i), i);
+           }
+           return maxLen;
+       }
     }
+
+
+
 
 }
 
