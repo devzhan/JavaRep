@@ -27,23 +27,10 @@ public class LongestPalindromicSubstring {
 
     class Solution {
         public String longestPalindrome(String s) {
-            if (s==null||s.length()<3){
+            if (s == null || s.length() < 3) {
                 return " ";
             }
-            int start=0;
-            int end = 0;
-            HashMap<String, Integer> hashMap = new HashMap<String, Integer>();
-            int i =0;
-            while (i<s.length()){
-                String object = s.substring(i,i+1);
-                if (hashMap.containsKey(object)){
-                    int lastPos = hashMap.get(object);
-                    if (i-lastPos>=2){
-
-                    }
-                }
-                hashMap.put(object,i);
-            }
+           return "";
         }
 
 
