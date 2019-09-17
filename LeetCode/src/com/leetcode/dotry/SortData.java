@@ -1,5 +1,10 @@
 package com.leetcode.dotry;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 /**
  * 排序算法相关
  */
@@ -92,7 +97,8 @@ public class SortData {
         if (array==null || array.length==0){
             return;
         }
-        for (int i =0; i <array.length;i++){
+
+       for (int i =0; i <array.length;i++){
             int minIndex = i;
             for (int j =i+1;j<array.length;j++){
                 if (array[j]<array[minIndex]){
@@ -111,4 +117,6 @@ public class SortData {
         }
 
     }
+
+
 }
