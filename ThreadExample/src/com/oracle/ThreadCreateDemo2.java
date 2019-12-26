@@ -2,7 +2,7 @@ package com.oracle;
 
 public class ThreadCreateDemo2 {
     public static void main(String[] args){
-        Thread thread = new Thread(new MyRunnable());
+        Thread thread = new Thread(new MyRunnable1());
         thread.start();
 
     }
@@ -10,7 +10,7 @@ public class ThreadCreateDemo2 {
 
 }
 
- class MyRunnable implements Runnable{
+ class MyRunnable1 implements Runnable{
 
      @Override
      public void run() {
