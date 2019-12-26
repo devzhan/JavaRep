@@ -25,8 +25,10 @@ public class NewScheduledThreadPoolExample {
                 public void run() {
                     System.out.println("currentTime is :"+System.currentTimeMillis()+"---index is :"+index);
 
-                }
+                 }
             },1,3, TimeUnit.SECONDS);
+
+//            executorService.scheduleWithFixedDelay()
         }
 
     }
