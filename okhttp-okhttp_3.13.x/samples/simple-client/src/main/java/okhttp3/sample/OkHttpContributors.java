@@ -3,12 +3,12 @@ package okhttp3.sample;
 import com.squareup.moshi.JsonAdapter;
 import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
+
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+
+import okhttp3.*;
 
 public class OkHttpContributors {
   private static final String ENDPOINT = "https://api.github.com/repos/square/okhttp/contributors";
@@ -23,13 +23,24 @@ public class OkHttpContributors {
 
   public static void main(String... args) throws Exception {
     OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
-    OkHttpClient client = clientBuilder.build();;
+    OkHttpClient client = clientBuilder.build();
 
     // Create request for remote resource.
     Request request = new Request.Builder()
         .url(ENDPOINT)
         .build();
-
+//
+//    client.newCall(request).enqueue(new Callback() {
+//      @Override
+//      public void onFailure(Call call, IOException e) {
+//
+//      }
+//
+//      @Override
+//      public void onResponse(Call call, Response response) throws IOException {
+//
+//      }
+//    });
     // Execute the request and retrieve the response.
     try (Response response = client.newCall(request).execute()) {
       // Deserialize HTTP response to concrete type.
