@@ -40,6 +40,12 @@ public final class CallServerInterceptor implements Interceptor {
     this.forWebSocket = forWebSocket;
   }
 
+  /**
+   *  责任链一层层传递，最终请求
+   * @param chain
+   * @return
+   * @throws IOException
+   */
   @Override public Response intercept(Chain chain) throws IOException {
     final RealInterceptorChain realChain = (RealInterceptorChain) chain;
     Call call = realChain.call();

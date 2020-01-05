@@ -89,6 +89,7 @@ final class RealCall implements Call {
     timeout.enter();
     eventListener.callStart(this);
     try {
+      //将当前执行的call 添加至队列之中
       client.dispatcher().executed(this);
       Response result = getResponseWithInterceptorChain();
       if (result == null) throw new IOException("Canceled");

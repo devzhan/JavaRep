@@ -12,6 +12,7 @@ import okhttp3.*;
 
 public class OkHttpContributors {
   private static final String ENDPOINT = "https://api.github.com/repos/square/okhttp/contributors";
+
   private static final Moshi MOSHI = new Moshi.Builder().build();
   private static final JsonAdapter<List<Contributor>> CONTRIBUTORS_JSON_ADAPTER = MOSHI.adapter(
       Types.newParameterizedType(List.class, Contributor.class));
@@ -45,6 +46,9 @@ public class OkHttpContributors {
     try (Response response = client.newCall(request).execute()) {
       // Deserialize HTTP response to concrete type.
       ResponseBody body = response.body();
+//      System.out.println("result is :" + body.string());
+
+
       List<Contributor> contributors = CONTRIBUTORS_JSON_ADAPTER.fromJson(body.source());
 
       // Sort list by the most contributions.
