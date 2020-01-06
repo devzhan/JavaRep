@@ -66,6 +66,7 @@ public final class CallServerInterceptor implements Interceptor {
       // Continue" response before transmitting the request body. If we don't get that, return
       // what we did get (such as a 4xx response) without ever transmitting the request body.
       if ("100-continue".equalsIgnoreCase(request.header("Expect"))) {
+        //放入请求
         httpCodec.flushRequest();
         realChain.eventListener().responseHeadersStart(call);
         responseBuilder = httpCodec.readResponseHeaders(true);
@@ -84,6 +85,7 @@ public final class CallServerInterceptor implements Interceptor {
           long contentLength = request.body().contentLength();
           CountingSink requestBodyOut =
               new CountingSink(httpCodec.createRequestBody(request, contentLength));
+          // 把Request的Request的body写入
           BufferedSink bufferedRequestBody = Okio.buffer(requestBodyOut);
 
           request.body().writeTo(bufferedRequestBody);
@@ -97,10 +99,11 @@ public final class CallServerInterceptor implements Interceptor {
         streamAllocation.noNewStreams();
       }
     }
-
+    // 把request 的信息写入完整
     if (!(request.body() instanceof DuplexRequestBody)) {
       httpCodec.finishRequest();
     }
+
 
     if (responseBuilder == null) {
       realChain.eventListener().responseHeadersStart(call);

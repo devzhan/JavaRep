@@ -58,7 +58,7 @@ final class RealCall implements Call {
 
   private RealCall(OkHttpClient client, Request originalRequest, boolean forWebSocket) {
     this.client = client;
-    this.originalRequest = originalRequest;
+    this.originalRequest = originalRequest;// 即为请求的Request
     this.forWebSocket = forWebSocket;
     this.retryAndFollowUpInterceptor = new RetryAndFollowUpInterceptor(client);
     this.timeout = new AsyncTimeout() {
@@ -87,10 +87,11 @@ final class RealCall implements Call {
     }
     captureCallStackTrace();
     timeout.enter();
-    eventListener.callStart(this);
+    eventListener.callStart(this);//okhttpclient的eventlistener
     try {
       //将当前执行的call 添加至队列之中
       client.dispatcher().executed(this);
+      //通过Interceptors的连锁处理，最终得到Response并返回
       Response result = getResponseWithInterceptorChain();
       if (result == null) throw new IOException("Canceled");
       return result;
@@ -125,7 +126,7 @@ final class RealCall implements Call {
     }
     captureCallStackTrace();
     eventListener.callStart(this);
-    client.dispatcher().enqueue(new AsyncCall(responseCallback));
+    client.dispatcher().enqueue(new AsyncCall(responseCallback));//dispatcher 执行
   }
 
   @Override public void cancel() {
@@ -190,6 +191,7 @@ final class RealCall implements Call {
       assert (!Thread.holdsLock(client.dispatcher()));
       boolean success = false;
       try {
+        //this 即为 AsyncCall ，因此可以确定AsyncCall 为一个实现了runnable几口的类
         executorService.execute(this);
         success = true;
       } catch (RejectedExecutionException e) {
@@ -204,17 +206,21 @@ final class RealCall implements Call {
       }
     }
 
+    /**
+     * 此为封装的线程run方法
+     */
+
     @Override protected void execute() {
       boolean signalledCallback = false;
       timeout.enter();
       try {
-        Response response = getResponseWithInterceptorChain();
+        Response response = getResponseWithInterceptorChain();//此时同同步方法一样
         if (retryAndFollowUpInterceptor.isCanceled()) {
           signalledCallback = true;
-          responseCallback.onFailure(RealCall.this, new IOException("Canceled"));
+          responseCallback.onFailure(RealCall.this, new IOException("Canceled"));//失败回调
         } else {
           signalledCallback = true;
-          responseCallback.onResponse(RealCall.this, response);
+          responseCallback.onResponse(RealCall.this, response);//成功回调
         }
       } catch (IOException e) {
         e = timeoutExit(e);
@@ -248,16 +254,17 @@ final class RealCall implements Call {
   Response getResponseWithInterceptorChain() throws IOException {
     // Build a full stack of interceptors.
     List<Interceptor> interceptors = new ArrayList<>();
-    interceptors.addAll(client.interceptors());
-    interceptors.add(retryAndFollowUpInterceptor);
-    interceptors.add(new BridgeInterceptor(client.cookieJar()));
-    interceptors.add(new CacheInterceptor(client.internalCache()));
-    interceptors.add(new ConnectInterceptor(client));
+    interceptors.addAll(client.interceptors());//自定义Interceptor
+    interceptors.add(retryAndFollowUpInterceptor);//重试Interceptor
+    interceptors.add(new BridgeInterceptor(client.cookieJar()));// 桥接的Interceptor，主要处理header中的信息
+    interceptors.add(new CacheInterceptor(client.internalCache()));//缓存
+    interceptors.add(new ConnectInterceptor(client));// 网络连接Interceptor，读取网络数据
     if (!forWebSocket) {
-      interceptors.addAll(client.networkInterceptors());
-    }
-    interceptors.add(new CallServerInterceptor(forWebSocket));
+      interceptors.addAll(client.networkInterceptors());// 网络networkInterceptors
 
+    }
+    interceptors.add(new CallServerInterceptor(forWebSocket));//调用服务器的interceptor
+    //将所有的interceptor封装成一个RealInterceptorChain 。这是责任链模式的主要业务处理中线。
     Interceptor.Chain chain = new RealInterceptorChain(interceptors, null, null, null, 0,
         originalRequest, this, eventListener, client.connectTimeoutMillis(),
         client.readTimeoutMillis(), client.writeTimeoutMillis());

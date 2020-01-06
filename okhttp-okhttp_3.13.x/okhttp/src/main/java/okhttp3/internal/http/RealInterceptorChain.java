@@ -123,7 +123,7 @@ public final class RealInterceptorChain implements Interceptor.Chain {
 
   public Response proceed(Request request, StreamAllocation streamAllocation, HttpCodec httpCodec,
       RealConnection connection) throws IOException {
-    if (index >= interceptors.size()) throw new AssertionError();
+    if (index >= interceptors.size()) throw new AssertionError();//是否越界
 
     calls++;
 
@@ -142,9 +142,9 @@ public final class RealInterceptorChain implements Interceptor.Chain {
     // Call the next interceptor in the chain.
     RealInterceptorChain next = new RealInterceptorChain(interceptors, streamAllocation, httpCodec,
         connection, index + 1, request, call, eventListener, connectTimeout, readTimeout,
-        writeTimeout);
-    Interceptor interceptor = interceptors.get(index);
-    Response response = interceptor.intercept(next);
+        writeTimeout);// 创建一下Chain，并得到之前的Chain的各种配置信息
+    Interceptor interceptor = interceptors.get(index);//当前的过滤器
+    Response response = interceptor.intercept(next);//责任链往下传递
 
     // Confirm that the next interceptor made its required call to chain.proceed().
     if (httpCodec != null && index + 1 < interceptors.size() && next.calls != 1) {
@@ -152,6 +152,7 @@ public final class RealInterceptorChain implements Interceptor.Chain {
           + " must call proceed() exactly once");
     }
 
+    //自定义过滤器优先级最高，不可为空，为空此时response 也会为空
     // Confirm that the intercepted response isn't null.
     if (response == null) {
       throw new NullPointerException("interceptor " + interceptor + " returned null");

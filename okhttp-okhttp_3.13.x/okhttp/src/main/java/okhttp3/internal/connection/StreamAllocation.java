@@ -111,8 +111,10 @@ public final class StreamAllocation {
     boolean connectionRetryEnabled = client.retryOnConnectionFailure();
 
     try {
+      //找到可用的连接
       RealConnection resultConnection = findHealthyConnection(connectTimeout, readTimeout,
           writeTimeout, pingIntervalMillis, connectionRetryEnabled, doExtensiveHealthChecks);
+      //为可用的连接指定编码
       HttpCodec resultCodec = resultConnection.newCodec(client, chain, this);
 
       synchronized (connectionPool) {
@@ -132,6 +134,7 @@ public final class StreamAllocation {
       int writeTimeout, int pingIntervalMillis, boolean connectionRetryEnabled,
       boolean doExtensiveHealthChecks) throws IOException {
     while (true) {
+      // 连接池中找可以用的连接
       RealConnection candidate = findConnection(connectTimeout, readTimeout, writeTimeout,
           pingIntervalMillis, connectionRetryEnabled);
 
@@ -183,7 +186,7 @@ public final class StreamAllocation {
         releasedConnection = null;
       }
 
-      if (result == null) {
+      if (result == null) {//连接不可用，从连接池中获取
         // Attempt to get a connection from the pool.
         Internal.instance.acquire(connectionPool, address, this, null);
         if (connection != null) {
@@ -252,7 +255,7 @@ public final class StreamAllocation {
       eventListener.connectionAcquired(call, result);
       return result;
     }
-
+    //连接池内部没有获取到连接，创建新的连接
     // Do TCP + TLS handshakes. This is a blocking operation.
     result.connect(connectTimeout, readTimeout, writeTimeout, pingIntervalMillis,
         connectionRetryEnabled, call, eventListener);
@@ -261,7 +264,7 @@ public final class StreamAllocation {
     Socket socket = null;
     synchronized (connectionPool) {
       reportedAcquired = true;
-
+      //将上述创建的连接加入到连接池中
       // Pool the connection.
       Internal.instance.put(connectionPool, result);
 

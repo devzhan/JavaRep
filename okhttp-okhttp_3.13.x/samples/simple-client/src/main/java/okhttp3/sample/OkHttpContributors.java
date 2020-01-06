@@ -31,18 +31,19 @@ public class OkHttpContributors {
         .url(ENDPOINT)
         .build();
 //
-//    client.newCall(request).enqueue(new Callback() {
-//      @Override
-//      public void onFailure(Call call, IOException e) {
-//
-//      }
-//
-//      @Override
-//      public void onResponse(Call call, Response response) throws IOException {
-//
-//      }
-//    });
+    client.newCall(request).enqueue(new Callback() {
+      @Override
+      public void onFailure(Call call, IOException e) {
+
+      }
+
+      @Override
+      public void onResponse(Call call, Response response) throws IOException {
+
+      }
+    });
     // Execute the request and retrieve the response.
+
     try (Response response = client.newCall(request).execute()) {
       // Deserialize HTTP response to concrete type.
       ResponseBody body = response.body();

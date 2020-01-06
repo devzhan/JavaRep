@@ -132,7 +132,7 @@ public final class Dispatcher {
 
   void enqueue(AsyncCall call) {
     synchronized (this) {
-      readyAsyncCalls.add(call);
+      readyAsyncCalls.add(call);//加载到等待运行的队列中
 
       // Mutate the AsyncCall so that it shares the AtomicInteger of an existing running call to
       // the same host.
@@ -198,7 +198,7 @@ public final class Dispatcher {
       }
       isRunning = runningCallsCount() > 0;
     }
-
+    //一系列判断后将可以执行的任务加入到线程池中
     for (int i = 0, size = executableCalls.size(); i < size; i++) {
       AsyncCall asyncCall = executableCalls.get(i);
       asyncCall.executeOn(executorService());
