@@ -5,6 +5,10 @@ import com.squareup.moshi.Moshi;
 import com.squareup.moshi.Types;
 
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
+import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 
@@ -25,6 +29,14 @@ public class OkHttpContributors {
   public static void main(String... args) throws Exception {
     OkHttpClient.Builder clientBuilder = new OkHttpClient.Builder();
     OkHttpClient client = clientBuilder.build();
+    clientBuilder.dns(new Dns() {
+      @Override
+      public List<InetAddress> lookup(String hostname) throws UnknownHostException {
+        return null;
+      }
+    });
+    clientBuilder.proxy(new Proxy(Proxy.Type.HTTP, new InetSocketAddress("www.baidu.com", 8888)));
+
 
     // Create request for remote resource.
     Request request = new Request.Builder()

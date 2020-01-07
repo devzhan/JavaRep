@@ -56,7 +56,7 @@ public final class CacheInterceptor implements Interceptor {
         : null;
 
     long now = System.currentTimeMillis();
-
+    //将缓存的response同request做对比，查看是否符合缓存策略
     CacheStrategy strategy = new CacheStrategy.Factory(now, chain.request(), cacheCandidate).get();
     Request networkRequest = strategy.networkRequest;
     Response cacheResponse = strategy.cacheResponse;
@@ -70,6 +70,7 @@ public final class CacheInterceptor implements Interceptor {
     }
 
     // If we're forbidden from using the network and the cache is insufficient, fail.
+    // 如果request不使用网络，但是缓存也不充分，直接返回504
     if (networkRequest == null && cacheResponse == null) {
       return new Response.Builder()
           .request(chain.request())
@@ -83,6 +84,7 @@ public final class CacheInterceptor implements Interceptor {
     }
 
     // If we don't need the network, we're done.
+    //如果获取到符合规则的缓存，则直接return，后续操作不执行。
     if (networkRequest == null) {
       return cacheResponse.newBuilder()
           .cacheResponse(stripBody(cacheResponse))
@@ -115,6 +117,7 @@ public final class CacheInterceptor implements Interceptor {
         // Update the cache after combining headers but before stripping the
         // Content-Encoding header (as performed by initContentStream()).
         cache.trackConditionalCacheHit();
+        // 更新缓存
         cache.update(cacheResponse, response);
         return response;
       } else {
