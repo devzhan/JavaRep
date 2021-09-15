@@ -14,12 +14,12 @@ public class SumAndTarget01 {
 
 
     public static void main(String[] args) {
-        Solution solution = new Solution();
+        Solution windowSolution = new Solution();
         int[] nums = new int[]{
                 2, 7, 11, 15
         };
         int target = 18;
-      int[] result =   solution.twoSum(nums,target);
+      int[] result =   windowSolution.twoSum(nums,target);
       System.out.println("result[0]=="+result[0]);
       System.out.println("result[1]=="+result[1]);
     }
